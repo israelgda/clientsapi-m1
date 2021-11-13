@@ -12,8 +12,12 @@ O projeto é um webservice Rest simples de CRUD completo de clientes. Os dados u
 * Endpoint centralizado para consulta de clientes por: id;
 * Visualização de todos os clientes com paginação;
 
-####  - Do seeding do banco - 
+####  - Do seeding e endereço do banco - 
 * O seeding é realizado através do arquivo "data.sql" localizado na pasta src/main/resources. Foi utilizado o banco H2 para realização dos testes, com auxílio do Postman nos testes das requests;
+* O banco H2 foi configurado para rodar no endereço local:
+```txt
+http://localhost:8080/h2-console
+```
 
 ## Tecnologias utilizadas
 #### - Framework - 
