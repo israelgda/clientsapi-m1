@@ -2,8 +2,11 @@ package com.israelgda.clientesapi.service;
 
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.israelgda.clientesapi.dto.ClientDTO;
 import com.israelgda.clientesapi.entity.Client;
@@ -16,19 +19,43 @@ public class ClientService {
 	@Autowired
 	private ClientRepository repository;
 
+	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> client = repository.findById(id);
 		ClientDTO result = new ClientDTO(client.orElseThrow(() -> new ResourceNotFoundException("Entity not found, id: " + id)));
 		return result;
 	}
 
+	@Transactional
 	public ClientDTO create(ClientDTO clientDTO) {
 		Client client = dtoToEntity(clientDTO);
 		client = repository.save(client);
 		return new ClientDTO(client);
 	}
-
 	
+	@Transactional
+	public ClientDTO update(Long id, ClientDTO clientDTO) {
+		try {
+			Client newClient = repository.getOne(id);
+			repository.save(updateClient(newClient, clientDTO));
+			
+			return new ClientDTO(newClient);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Entity not found, id: " + id);
+		}
+		
+	}
+	
+	
+	private Client updateClient(Client newClient, ClientDTO clientDTO) {
+		newClient.setName(clientDTO.getName());
+		newClient.setCpf(clientDTO.getCpf());
+		newClient.setIncome(clientDTO.getIncome());
+		newClient.setBirthDate(clientDTO.getBirthDate());
+		newClient.setChildren(clientDTO.getChildren());
+		return newClient;
+	}
+
 	private Client dtoToEntity(ClientDTO clientDTO) {
 		Client client = new Client();
 		client.setName(clientDTO.getName());
@@ -38,4 +65,5 @@ public class ClientService {
 		client.setChildren(clientDTO.getChildren());
 		return client;
 	}
+
 }
